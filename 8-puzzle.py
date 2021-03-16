@@ -6,9 +6,10 @@ class Node:
     Node class to represent a state for the 8-puzzle.
     """
 
-    def __init__(self, data, g_value, goal, euclidean=True):
+    def __init__(self, data, g_value, goal, euclidean=True, parent=None):
         self.data = data
         self.g_value = g_value
+        self.parent = parent
         self.f_value = self.calculate_f(goal, euclidean)
 
     def calculate_f(self, goal, euclidean):
@@ -52,7 +53,7 @@ class Node:
                 if state[i][j] == tile:
                     return [i, j]
 
-    def generate_children(self, goal, euclidean=True):
+    def generate_children(self, parent, goal, euclidean=True):
         """
         Generate children of the node.
         :param goal: goal state.
@@ -66,7 +67,7 @@ class Node:
         for i in val_list:
             child = self.shuffle(x, y, i[0], i[1])
             if child is not None:
-                child_node = Node(child, self.g_value + 1, goal, euclidean)
+                child_node = Node(child, self.g_value + 1, goal, euclidean, parent)
                 children.append(child_node)
         return children
 
@@ -120,21 +121,17 @@ class Puzzle:
         :param euclidean: True if to use Euclidean heuristics.
         :return: None.
         """
-
-        iteration_count = 1
+        iteration_count = 0
         while self.open:
 
             current = self.lowest()
-
-            # Print data.
-            print("\n <<<<<< \n")
-            print("Iteration number: ", iteration_count)
             iteration_count += 1
-            self.pretty_print(current)
 
             # If end state was reached, end.
             if current.data == final:
-                print("\nSUCCESS")
+                self.end(current)
+                print("\nMoves: ", current.g_value)
+                print("Iterations: ", iteration_count)
                 break
 
             # Remove current node from open list and add it to closed list.
@@ -142,7 +139,7 @@ class Puzzle:
             self.closed.append(current)
 
             # Loop through the node children and handle them adequately.
-            neighbours = current.generate_children(final, euclidean)
+            neighbours = current.generate_children(current, final, euclidean)
             for neighbour in neighbours:
                 exist_in_open = self.is_in_open(neighbour)
                 if exist_in_open:
@@ -153,6 +150,21 @@ class Puzzle:
                     if exist_in_closed.g_value < neighbour.g_value:
                         continue
                 self.open.append(neighbour)
+
+    def end(self, current):
+        """
+        End function to print the sequence.
+        :param current: current node (last one).
+        :return: None.
+        """
+        move_list = []
+        while current.parent:
+            move_list.append(current)
+            current = current.parent
+        move_list.append(current)
+        for move in move_list[::-1]:
+            print("\n <<<<<< \n")
+            self.pretty_print(move)
 
     def lowest(self):
         """
@@ -215,7 +227,7 @@ def initialize_input():
     return matrix
 
 
-DEFAULT = False
+DEFAULT = False  # Set this to True for testing purposes to not have to input.
 
 if __name__ == '__main__':
 
@@ -226,7 +238,7 @@ if __name__ == '__main__':
         print("Please input the goal state:")
         end = initialize_input()
         choice = input("Enter 1 for Euclidean heuristics or 2 for Manhattan heuristic:")
-        if input == "2":
+        if choice == "2":
             is_euclidean = False
         else:
             is_euclidean = True
@@ -236,6 +248,7 @@ if __name__ == '__main__':
         is_euclidean = True
 
     # Run A star search for given problem.
+    print("Calculating optimal path...")
     start_node = Node(start, 0, end, is_euclidean)
     puzzle = Puzzle(start_node)
     puzzle.run(end, is_euclidean)
