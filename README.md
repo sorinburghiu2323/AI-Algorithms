@@ -2,6 +2,8 @@
 
 ECM2423 Coursework Exercise.
 
+This code is hosted on github at: https://github.com/sorinburghiu2323/AI-Algorithms
+
 ## Setup
 
 Please note that wanting to run just the 8-puzzle requires no setup.
