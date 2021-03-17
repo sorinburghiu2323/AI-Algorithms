@@ -1,4 +1,10 @@
+import random
 from math import sqrt
+
+DEVELOPMENT = False  # Set this to True for testing purposes to not have to input.
+IS_EUCLIDEAN = True  # Set to False for Manhattan heuristics or True for Euclidean.
+DEVELOPMENT_START = [[7, 2, 4], [5, 0, 6], [8, 3, 1]]
+DEVELOPMENT_GOAL = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
 
 
 class Node:
@@ -113,30 +119,31 @@ class Puzzle:
     def __init__(self, initial: Node):
         self.open = [initial]
         self.closed = []
+        self.iteration_count = 0
 
     def run(self, final, euclidean):
         """
-        Run the puzzle.
+        Run the puzzle. This is the main loop for the A* algorithm.
         :param final: end state as matrix.
         :param euclidean: True if to use Euclidean heuristics.
         :return: None.
         """
-        iteration_count = 0
         while self.open:
 
             current = self.lowest()
-            iteration_count += 1
+            self.iteration_count += 1
 
             # If end state was reached, end.
             if current.data == final:
                 self.end(current)
                 print("\nMoves: ", current.g_value)
-                print("Iterations: ", iteration_count)
+                print("Iterations: ", self.iteration_count)
                 break
 
             # Remove current node from open list and add it to closed list.
             self.open.remove(current)
             self.closed.append(current)
+            self.loading()
 
             # Loop through the node children and handle them adequately.
             neighbours = current.generate_children(current, final, euclidean)
@@ -150,6 +157,21 @@ class Puzzle:
                     if exist_in_closed.g_value < neighbour.g_value:
                         continue
                 self.open.append(neighbour)
+
+    def loading(self):
+        """
+        Quality of life loading messages to keep the user entertained.
+        :return: None.
+        """
+        if self.iteration_count % 2000 == 0:
+            loading_statements = [
+                "Going really deep into the tree...",
+                "Searching deeply...",
+                "Analysing open nodes...",
+                "Loading...",
+                "Optimising path...",
+            ]
+            print(random.choice(loading_statements))
 
     def end(self, current):
         """
@@ -227,25 +249,24 @@ def initialize_input():
     return matrix
 
 
-DEFAULT = False  # Set this to True for testing purposes to not have to input.
-
 if __name__ == '__main__':
 
-    # Get inputs.
-    if not DEFAULT:
+    # Get inputs if not in development, otherwise use default values.
+    if not DEVELOPMENT:
+        print("Input each number separated by a space, enter new row by pressing enter.")
         print("Please input the start state:")
         start = initialize_input()
         print("Please input the goal state:")
         end = initialize_input()
-        choice = input("Enter 1 for Euclidean heuristics or 2 for Manhattan heuristic:")
+        choice = input("Enter 1 for Euclidean heuristic or 2 for Manhattan heuristic:")
         if choice == "2":
             is_euclidean = False
         else:
             is_euclidean = True
     else:
-        start = [[3, 6, 4], [0, 1, 2], [8, 7, 5]]
-        end = [[1, 2, 3], [8, 0, 4], [7, 6, 5]]
-        is_euclidean = True
+        start = DEVELOPMENT_START
+        end = DEVELOPMENT_GOAL
+        is_euclidean = IS_EUCLIDEAN
 
     # Run A star search for given problem.
     print("Calculating optimal path...")
