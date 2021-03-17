@@ -206,7 +206,7 @@ class Puzzle:
         :return: the copy Node else None.
         """
         for n in self.open:
-            if n.data == node.data:
+            if n.data == node.digits:
                 return n
         return None
 
@@ -217,7 +217,7 @@ class Puzzle:
         :return: the copy Node else None.
         """
         for n in self.closed:
-            if n.data == node.data:
+            if n.digits == node.digits:
                 return n
         return None
 
@@ -227,7 +227,7 @@ class Puzzle:
         :param node: Node to be printed.
         :return: None.
         """
-        for row in node.data:
+        for row in node.digits:
             pretty = " "
             for i in row:
                 pretty += str(i) + " "
