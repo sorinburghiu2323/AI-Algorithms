@@ -32,3 +32,11 @@ To run it, simply run the python script. Development variables can be found at t
 
 Run the python file `k-means_clustering.py` having gone through the setup. The code will print out a table of data
 in the console and a matplotlib interpretation of clusters should show up on the screen.
+
+## Decision tree classifier: classification of urban areas
+
+The python file `decision_trees.py` need the `data.csv` file to work. Make sure you have that installed
+then you should be able to run the python file accordingly; setup step is also needed for this part.
+
+Constants have been left at the top of the script to be adjusted if needed. The result should be a printout of the
+decision tree accuracy and a generated graph to showcase feature importance.
