@@ -19,7 +19,7 @@ $ .venv\bin\activate              # Linux
 
 Then install python dependencies:
 ```
-$ pip install -r requirements.txt
+$ pip install -r requirements.txt 
 ```
 
 ## A star algorithm: 8-puzzle
